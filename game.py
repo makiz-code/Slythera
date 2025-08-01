@@ -13,14 +13,14 @@ GREEN2 = (100, 200, 100)
 BLOCK_SIZE = 20
 SPEED = 60
 
-icon = pygame.image.load('Snakey.png')
+icon = pygame.image.load('Slythera.png')
 
 class SnakeGame:
     def __init__(self, w=640, h=480):
         self.w = w
         self.h = h
         self.display = pygame.display.set_mode((self.w, self.h))
-        pygame.display.set_caption('Snakey')
+        pygame.display.set_caption('Slythera')
         pygame.display.set_icon(icon)
         self.clock = pygame.time.Clock()
         self.reset()
