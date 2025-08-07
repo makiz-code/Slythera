@@ -1,5 +1,7 @@
+from dotenv import load_dotenv
+load_dotenv()
+
 import random
-import torch
 import numpy as np
 from collections import deque
 
@@ -18,7 +20,7 @@ class Agent:
         self.memory = deque(maxlen=MAX_MEMORY)
 
         self.model = DQN(11, 256, 3)
-        saved_state = self.model.load()  # Load model and game state if exists
+        saved_state = self.model.load()
         self.trainer = DQNTrainer(self.model, lr=LR, gamma=self.gamma)
 
         if saved_state:
@@ -65,9 +67,8 @@ class Agent:
             move = random.randint(0, 2)
             action[move] = 1
         else:
-            state0 = torch.tensor(state, dtype=torch.float).unsqueeze(0)
-            prediction = self.model(state0)
-            move = torch.argmax(prediction).item()
+            prediction = self.model.predict(state)
+            move = np.argmax(prediction)
             action[move] = 1
 
         return action
@@ -99,12 +100,12 @@ def train():
             action = agent.get_action(state_old)
             reward, done, score = env.step(action, agent.n_games, record)
 
-            if score == 'quit':  # user closed window
+            if score == 'quit':
                 agent.model.save(stats={'record': record, 'n_games': agent.n_games})
                 break
 
-            if score == 'reset_agent':  # delete button clicked
-                agent = Agent()  # recreate agent from scratch
+            if score == 'reset_agent':
+                agent = Agent()
                 record = agent.record
                 env.reset()
                 continue

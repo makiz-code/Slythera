@@ -171,14 +171,12 @@ class SnakeGame:
         return not (0 <= pt[0] < self.w and 0 <= pt[1] < self.h)
 
     def show_stats(self, game_number, record):
-        # Draw black bar at the bottom
         pygame.draw.rect(
             self.display,
             EARTHY,
             pygame.Rect(0, self.h, self.w, self.stats_height)
         )
 
-        # Render Game Info
         font = pygame.font.Font('assets/fonts/EBGaramond-Regular.ttf', 28)
         padding_top = 5
         padding_between = 10
@@ -196,7 +194,6 @@ class SnakeGame:
             text_y
         ))
 
-        # Draw delete icon
         icon_size = 30
         padding_right = 10
         icon_x = self.w - icon_size - padding_right
@@ -209,7 +206,6 @@ class SnakeGame:
         self.delete_button_rect = pygame.Rect(icon_x, icon_y, icon_size, icon_size)
         self.display.blit(self.delete_icon, (icon_x, icon_y))
 
-        # Pointer cursor on hover
         mouse_pos = pygame.mouse.get_pos()
         if self.delete_button_rect.collidepoint(mouse_pos):
             pygame.mouse.set_cursor(pygame.SYSTEM_CURSOR_HAND)
@@ -219,7 +215,6 @@ class SnakeGame:
     def render(self, game_number=0, record=0):
         self.display.fill(SANDY)
 
-        # Draw border
         pygame.draw.rect(self.display, BROWN, pygame.Rect(0, 0, self.w, self.h), 5)
 
         # Draw snake

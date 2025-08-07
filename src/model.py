@@ -1,70 +1,67 @@
-import torch
-import torch.nn as nn
-import torch.optim as optim
-import torch.nn.functional as F
 import os
 import json
+import numpy as np
+import tensorflow as tf
+from keras.models import Sequential
+from keras.layers import Dense, Input
+from keras.optimizers import Adam
+from keras.losses import MeanSquaredError
 
-class DQN(nn.Module):
+class DQN:
     def __init__(self, input_size, hidden_size, output_size):
-        super().__init__()
-        self.linear1 = nn.Linear(input_size, hidden_size)
-        self.linear2 = nn.Linear(hidden_size, output_size)
+        self.model = Sequential([
+            Input(shape=(input_size,)),
+            Dense(hidden_size, activation='relu'),
+            Dense(output_size)
+        ])
+        self.model.compile(optimizer=Adam(), loss=MeanSquaredError())
 
-    def forward(self, x):
-        x = F.relu(self.linear1(x))
-        x = self.linear2(x)
-        return x
+    def predict(self, state):
+        state = np.array(state).reshape(1, -1)
+        return self.model(state, training=False).numpy()
 
-    def save(self, file_name='model.pth', stats=None):
+    def train(self, x, y):
+        self.model.train_on_batch(np.array(x), np.array(y))
+
+    def save(self, file_name='model.keras', stats=None):
         model_folder_path = 'model'
         if not os.path.exists(model_folder_path):
             os.makedirs(model_folder_path)
 
-        # Save model weights
         file_path = os.path.join(model_folder_path, file_name)
-        torch.save(self.state_dict(), file_path)
+        self.model.save(file_path)  # Save as .keras file
 
-        # Save game state (record, n_games)
         if stats is not None:
             state_file = os.path.join(model_folder_path, 'stats.json')
             with open(state_file, 'w') as f:
                 json.dump(stats, f)
 
-    def load(self, file_name='model.pth'):
+    def load(self, file_name='model.keras'):
         model_folder_path = 'model'
         file_path = os.path.join(model_folder_path, file_name)
         if os.path.exists(file_path):
-            self.load_state_dict(torch.load(file_path))
+            try:
+                self.model = tf.keras.models.load_model(file_path)
+            except Exception as e:
+                return None
             state_file = os.path.join(model_folder_path, 'stats.json')
             if os.path.exists(state_file):
                 with open(state_file, 'r') as f:
                     return json.load(f)
         return None
 
-
 class DQNTrainer:
-    def __init__(self, model, lr, gamma):
-        self.lr = lr
-        self.gamma = gamma
+    def __init__(self, model: DQN, lr, gamma):
         self.model = model
-        self.optimizer = optim.Adam(model.parameters(), lr=self.lr)
-        self.criterion = nn.MSELoss()
+        self.gamma = gamma
 
     def train_step(self, state, action, reward, next_state, done):
-        state = torch.tensor(state, dtype=torch.float)
-        action = torch.tensor(action, dtype=torch.long)
-        reward = torch.tensor(reward, dtype=torch.float)
-        next_state = torch.tensor(next_state, dtype=torch.float)
+        state = np.array(state).reshape(1, -1)
+        next_state = np.array(next_state).reshape(1, -1)
+        target = self.model.predict(state)
+        next_q = np.max(self.model.predict(next_state))
 
-        pred = self.model(state)
-        target = pred.clone()
+        Q_new = reward + self.gamma * next_q * (1 - int(done))
+        target[0][np.argmax(action)] = Q_new
 
-        # Bellman equation
-        Q_new = reward + self.gamma * torch.max(self.model(next_state)) * (1-done)
-        target[torch.argmax(action).item()] = Q_new
-
-        self.optimizer.zero_grad()
-        loss = self.criterion(target, pred)
-        loss.backward()
-        self.optimizer.step()
+        self.model.train(state, target)
