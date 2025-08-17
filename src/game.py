@@ -14,7 +14,7 @@ BLACK = (0, 0, 0)
 
 BLOCK_SIZE = 40
 SPEED = 15
-icon = pygame.image.load('assets/imgs/Slythera_logo.png')
+icon = pygame.image.load('./assets/imgs/Slythera_logo.png')
 
 RIGHT = (1, 0)
 DOWN = (0, 1)
@@ -31,7 +31,7 @@ class SnakeGame:
         pygame.display.set_caption('Slythera')
         pygame.display.set_icon(icon)
         self.clock = pygame.time.Clock()
-        self.sprite_sheet = pygame.image.load("assets/imgs/snake_graphics.png").convert_alpha()
+        self.sprite_sheet = pygame.image.load("./assets/imgs/snake_graphics.png").convert_alpha()
         self.load_sprites()
         self.reset()
 
@@ -83,7 +83,7 @@ class SnakeGame:
             if self.food not in self.snake:
                 break
 
-    def game_over(self, image_path="assets/imgs/game_over.png"):
+    def game_over(self, image_path="./assets/imgs/game_over.png"):
         img = pygame.image.load(image_path).convert_alpha()
         max_width = self.w // 2
         max_height = self.h // 2
@@ -102,7 +102,7 @@ class SnakeGame:
         pygame.time.delay(1000)
 
     def delete_model(self):
-        model_dir = "model"
+        model_dir = "./model"
         if os.path.exists(model_dir):
             for filename in os.listdir(model_dir):
                 file_path = os.path.join(model_dir, filename)
@@ -177,7 +177,7 @@ class SnakeGame:
             pygame.Rect(0, self.h, self.w, self.stats_height)
         )
 
-        font = pygame.font.Font('assets/fonts/EBGaramond-Regular.ttf', 28)
+        font = pygame.font.Font('./assets/fonts/EBGaramond-Regular.ttf', 28)
         padding_top = 5
         padding_between = 10
         start_x = 10
@@ -200,7 +200,7 @@ class SnakeGame:
         icon_y = self.h + (self.stats_height - icon_size) // 2
 
         if not hasattr(self, 'delete_icon'):
-            self.delete_icon = pygame.image.load("assets/imgs/delete_icon.png").convert_alpha()
+            self.delete_icon = pygame.image.load("./assets/imgs/delete_icon.png").convert_alpha()
             self.delete_icon = pygame.transform.scale(self.delete_icon, (icon_size, icon_size))
 
         self.delete_button_rect = pygame.Rect(icon_x, icon_y, icon_size, icon_size)

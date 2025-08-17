@@ -24,7 +24,7 @@ class DQN:
         self.model.train_on_batch(np.array(x), np.array(y))
 
     def save(self, file_name='model.keras', stats=None):
-        model_folder_path = 'model'
+        model_folder_path = './model'
         if not os.path.exists(model_folder_path):
             os.makedirs(model_folder_path)
 
