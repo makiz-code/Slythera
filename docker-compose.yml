@@ -1,19 +1,13 @@
 services:
   slythera:
     build: .
-
-    # Mount entire model and assets
+    image: mohamedkhalilzrelly/slythera:latest
+    container_name: slythera
     volumes:
       - ./src/model:/app/src/model
       - ./src/assets:/app/assets
-
-    # Set working directory
     working_dir: /app
-
-    # Set display for GUI (Windows VcXsrv)
     environment:
       - DISPLAY=host.docker.internal:0
-
-    # Keep container interactive
     stdin_open: true
     tty: true
