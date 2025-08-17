@@ -5,7 +5,7 @@ services:
 
     # Mount local folders/files
     volumes:
-      - ./model:/app/model
+      - ./src/model:/app/src/model
 
     # Set display for GUI (Windows VcXsrv)
     environment:
