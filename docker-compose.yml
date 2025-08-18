@@ -4,7 +4,7 @@ services:
     image: mohamedkhalilzrelly/slythera:latest
     container_name: slythera
     volumes:
-      - ./src/model:/app/src/model
+      - ./src/model:/app/model
       - ./src/assets:/app/assets
     working_dir: /app
     environment:

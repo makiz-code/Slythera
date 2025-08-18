@@ -7,6 +7,8 @@ from keras.layers import Dense, Input
 from keras.optimizers import Adam
 from keras.losses import MeanSquaredError
 
+MODEL_FOLDER = './model'
+
 class DQN:
     def __init__(self, input_size, hidden_size, output_size):
         self.model = Sequential([
@@ -24,27 +26,25 @@ class DQN:
         self.model.train_on_batch(np.array(x), np.array(y))
 
     def save(self, file_name='model.keras', stats=None):
-        model_folder_path = './model'
-        if not os.path.exists(model_folder_path):
-            os.makedirs(model_folder_path)
+        if not os.path.exists(MODEL_FOLDER):
+            os.makedirs(MODEL_FOLDER)
 
-        file_path = os.path.join(model_folder_path, file_name)
-        self.model.save(file_path)  # Save as .keras file
+        file_path = os.path.join(MODEL_FOLDER, file_name)
+        self.model.save(file_path)
 
         if stats is not None:
-            state_file = os.path.join(model_folder_path, 'stats.json')
+            state_file = os.path.join(MODEL_FOLDER, 'stats.json')
             with open(state_file, 'w') as f:
                 json.dump(stats, f)
 
     def load(self, file_name='model.keras'):
-        model_folder_path = 'model'
-        file_path = os.path.join(model_folder_path, file_name)
+        file_path = os.path.join(MODEL_FOLDER, file_name)
         if os.path.exists(file_path):
             try:
                 self.model = tf.keras.models.load_model(file_path)
             except Exception as e:
                 return None
-            state_file = os.path.join(model_folder_path, 'stats.json')
+            state_file = os.path.join(MODEL_FOLDER, 'stats.json')
             if os.path.exists(state_file):
                 with open(state_file, 'r') as f:
                     return json.load(f)
