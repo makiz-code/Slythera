@@ -1,5 +1,2 @@
-**/__pycache__/
-
-# models
+# model & stats
 src/model/*
-!src/model/.gitkeep
