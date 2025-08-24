@@ -1,6 +1,3 @@
-from dotenv import load_dotenv
-load_dotenv()
-
 import random
 import numpy as np
 from collections import deque
@@ -10,7 +7,7 @@ from model import DQN, DQNTrainer
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
-LR = 0.001
+LEARNING_RATE = 0.001
 
 class Agent:
     def __init__(self):
@@ -21,7 +18,7 @@ class Agent:
 
         self.model = DQN(11, 256, 3)
         saved_state = self.model.load()
-        self.trainer = DQNTrainer(self.model, lr=LR, gamma=self.gamma)
+        self.trainer = DQNTrainer(self.model, lr=LEARNING_RATE, gamma=self.gamma)
 
         if saved_state:
             self.n_games = saved_state.get('n_games', 0)

@@ -6,32 +6,36 @@ import shutil
 
 pygame.init()
 
+LOGO_PATH = os.path.join('./assets/imgs/Slythera_logo.png')
+SNAKE_GRAPHICS_PATH = os.path.join('./assets/imgs/snake_graphics.png')
+GAME_OVER_PATH = os.path.join('./assets/imgs/game_over.png')
+DELETE_ICON_PATH = os.path.join('./assets/imgs/delete_icon.png')
+FONT_PATH = os.path.join('./assets/fonts/EBGaramond-Regular.ttf')
+
 SANDY = (150, 130, 100)
 BROWN = (110, 90, 70)
 EARTHY = (60, 45, 35)
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
 
 BLOCK_SIZE = 40
 SPEED = 15
-icon = pygame.image.load('./assets/imgs/Slythera_logo.png')
 
 RIGHT = (1, 0)
 DOWN = (0, 1)
 LEFT = (-1, 0)
 UP = (0, -1)
+
 DIRECTIONS = [RIGHT, DOWN, LEFT, UP]
 
 class SnakeGame:
     def __init__(self, w=640, h=480):
         self.w = w
         self.h = h
-        self.stats_height = 50  # Extra height for displaying score info
+        self.stats_height = 50
         self.display = pygame.display.set_mode((self.w, self.h + self.stats_height))
         pygame.display.set_caption('Slythera')
-        pygame.display.set_icon(icon)
+        pygame.display.set_icon(pygame.image.load(LOGO_PATH))
         self.clock = pygame.time.Clock()
-        self.sprite_sheet = pygame.image.load("./assets/imgs/snake_graphics.png").convert_alpha()
+        self.sprite_sheet = pygame.image.load(SNAKE_GRAPHICS_PATH).convert_alpha()
         self.load_sprites()
         self.reset()
 
@@ -83,7 +87,7 @@ class SnakeGame:
             if self.food not in self.snake:
                 break
 
-    def game_over(self, image_path="./assets/imgs/game_over.png"):
+    def game_over(self, image_path=GAME_OVER_PATH):
         img = pygame.image.load(image_path).convert_alpha()
         max_width = self.w // 2
         max_height = self.h // 2
@@ -124,7 +128,7 @@ class SnakeGame:
                 return 0, True, 'quit'
             
             elif event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:  # Left click
+                if event.button == 1:
                     if hasattr(self, 'delete_button_rect') and self.delete_button_rect.collidepoint(event.pos):
                         self.delete_model()
                         return 0, True, 'reset_agent'
@@ -177,7 +181,7 @@ class SnakeGame:
             pygame.Rect(0, self.h, self.w, self.stats_height)
         )
 
-        font = pygame.font.Font('./assets/fonts/EBGaramond-Regular.ttf', 28)
+        font = pygame.font.Font(FONT_PATH, 28)
         padding_top = 5
         padding_between = 10
         start_x = 10
@@ -200,7 +204,7 @@ class SnakeGame:
         icon_y = self.h + (self.stats_height - icon_size) // 2
 
         if not hasattr(self, 'delete_icon'):
-            self.delete_icon = pygame.image.load("./assets/imgs/delete_icon.png").convert_alpha()
+            self.delete_icon = pygame.image.load(DELETE_ICON_PATH).convert_alpha()
             self.delete_icon = pygame.transform.scale(self.delete_icon, (icon_size, icon_size))
 
         self.delete_button_rect = pygame.Rect(icon_x, icon_y, icon_size, icon_size)
