@@ -7,18 +7,20 @@ from model import DQN, DQNTrainer
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
-LEARNING_RATE = 0.001
 
 class Agent:
-    def __init__(self):
+    def __init__(self, force_new=False):
         self.n_games = 0
-        self.epsilon = 0
         self.gamma = 0.9
-        self.memory = deque(maxlen=MAX_MEMORY)
+        self.epsilon_ini = 80
+        self.epsilon_val = self.epsilon_ini
+        self.max_games = 100
+        self.curve = 5        # curve factor
 
+        self.memory = deque(maxlen=MAX_MEMORY)
         self.model = DQN(11, 256, 3)
-        saved_state = self.model.load()
-        self.trainer = DQNTrainer(self.model, lr=LEARNING_RATE, gamma=self.gamma)
+        saved_state = None if force_new else self.model.load()
+        self.trainer = DQNTrainer(self.model, gamma=self.gamma)
 
         if saved_state:
             self.n_games = saved_state.get('n_games', 0)
@@ -57,17 +59,16 @@ class Agent:
         return np.array(state, dtype=int)
 
     def get_action(self, state):
-        self.epsilon = 80 - self.n_games
-        action = [0, 0, 0]
+        self.epsilon_val = self.epsilon_ini * ((1 - min(self.n_games / self.max_games, 1)) ** self.curve)
 
-        if random.randint(0, 200) < self.epsilon:
+        action = [0, 0, 0]
+        if random.random() < self.epsilon_val / 100:
             move = random.randint(0, 2)
-            action[move] = 1
         else:
             prediction = self.model.predict(state)
             move = np.argmax(prediction)
-            action[move] = 1
-
+            
+        action[move] = 1
         return action
 
     def remember(self, state, action, reward, next_state, done):
@@ -85,28 +86,45 @@ class Agent:
         for state, action, reward, next_state, done in mini_sample:
             self.trainer.train_step(state, action, reward, next_state, done)
 
-
 def train():
-    agent = Agent()
     env = SnakeGame()
+    choice = env.main_menu()
+
+    if choice == "quit":
+        return
+    elif choice == "new":
+        agent = Agent(force_new=True)
+    else:
+        agent = Agent()
+
     record = agent.record
 
     try:
         while True:
             state_old = agent.get_state(env)
             action = agent.get_action(state_old)
-            reward, done, score = env.step(action, agent.n_games, record)
 
-            if score == 'quit':
+            reward, done, result = env.step(action, agent.n_games, record)
+
+            if result == 'quit':
                 agent.model.save(stats={'record': record, 'n_games': agent.n_games})
                 break
 
-            if score == 'reset_agent':
-                agent = Agent()
+            if result == 'menu':
+                agent.model.save(stats={'record': record, 'n_games': agent.n_games})
+                env.reset()
+                choice = env.main_menu()
+                if choice == "quit":
+                    break
+                elif choice == "new":
+                    agent = Agent(force_new=True)
+                else:
+                    agent = Agent()
                 record = agent.record
                 env.reset()
                 continue
 
+            score = result
             state_new = agent.get_state(env)
             agent.train_short_memory(state_old, action, reward, state_new, done)
             agent.remember(state_old, action, reward, state_new, done)
@@ -116,7 +134,7 @@ def train():
                 agent.n_games += 1
                 agent.train_long_memory()
 
-                if score > record:
+                if isinstance(score, int) and score > record:
                     record = score
                     agent.model.save(stats={'record': record, 'n_games': agent.n_games})
 

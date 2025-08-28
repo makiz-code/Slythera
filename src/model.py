@@ -16,7 +16,10 @@ class DQN:
             Dense(hidden_size, activation='relu'),
             Dense(output_size)
         ])
-        self.model.compile(optimizer=Adam(), loss=MeanSquaredError())
+        self.model.compile(
+            optimizer=Adam(learning_rate=0.001), 
+            loss=MeanSquaredError()
+        )
 
     def predict(self, state):
         state = np.array(state).reshape(1, -1)
@@ -51,7 +54,7 @@ class DQN:
         return None
 
 class DQNTrainer:
-    def __init__(self, model: DQN, lr, gamma):
+    def __init__(self, model: DQN, gamma):
         self.model = model
         self.gamma = gamma
 
