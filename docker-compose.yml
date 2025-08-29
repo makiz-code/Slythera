@@ -1,11 +1,12 @@
 services:
   slythera:
-    build: .
+    build: ./app
     image: mohamedkhalilzrelly/slythera:latest
     container_name: slythera
+    restart: always
     volumes:
-      - ./model:/app/model
-      - ./assets:/app/assets
+      - ./app:/app
+      - ./app/src/models:/app/src/models
     working_dir: /app
     environment:
       - DISPLAY=host.docker.internal:0

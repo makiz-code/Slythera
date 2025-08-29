@@ -6,19 +6,21 @@ import shutil
 
 pygame.init()
 
-LOGO_PATH = os.path.join('./assets/imgs/Slythera_logo.png')
-SNAKE_GRAPHICS_PATH = os.path.join('./assets/imgs/snake_graphics.png')
-STONE_PATH = os.path.join('./assets/imgs/stone_obstacle.png')
-GAME_OVER_PATH = os.path.join('./assets/imgs/game_over.png')
-ARROW_ICON_PATH = os.path.join('./assets/imgs/arrow_icon.png')
-FONT_PATH = os.path.join('./assets/fonts/EBGaramond-Regular.ttf')
+BASE_DIR = os.path.join(os.path.dirname(__file__), 'assets')
+
+LOGO_PATH = os.path.join(BASE_DIR, 'imgs', 'Slythera_logo.png')
+SNAKE_GRAPHICS_PATH = os.path.join(BASE_DIR, 'imgs', 'snake_graphics.png')
+STONE_PATH = os.path.join(BASE_DIR, 'imgs', 'stone_obstacle.png')
+GAME_OVER_PATH = os.path.join(BASE_DIR, 'imgs', 'game_over.png')
+ARROW_ICON_PATH = os.path.join(BASE_DIR, 'imgs', 'arrow_icon.png')
+FONT_PATH = os.path.join(BASE_DIR, 'fonts', 'EBGaramond-Regular.ttf')
 
 SANDY = (150, 130, 100)
 BROWN = (110, 90, 70)
 EARTHY = (60, 45, 35)
 
 BLOCK_SIZE = 40
-MAX_STONES = 10
+MAX_STONES = 9
 SPEED = 15
 
 RIGHT = (1, 0)
@@ -155,7 +157,7 @@ class SnakeGame:
         pygame.display.flip()
 
     def delete_model(self):
-        model_dir = "./model"
+        model_dir = os.path.join(os.path.dirname(__file__), 'models')
         if os.path.exists(model_dir):
             for filename in os.listdir(model_dir):
                 file_path = os.path.join(model_dir, filename)

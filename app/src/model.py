@@ -7,7 +7,7 @@ from keras.layers import Dense, Input
 from keras.optimizers import Adam
 from keras.losses import MeanSquaredError
 
-MODEL_FOLDER = './model'
+MODEL_FOLDER = os.path.join(os.path.dirname(__file__), 'models')
 
 class DQN:
     def __init__(self, input_size, hidden_size, output_size):

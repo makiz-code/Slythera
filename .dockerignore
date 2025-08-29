@@ -1,5 +1,6 @@
 **/__pycache__/
 
 # dependencies
-.venv
-model/*
+app/.venv
+app/src/models/*.keras
+app/src/models/*.json
