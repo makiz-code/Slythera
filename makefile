@@ -1,6 +1,6 @@
 .PHONY: env start stop
 
-# Build Environment
+# Build Env
 env:
 ifeq ($(OS),Windows_NT)
 	python -m venv app\.venv
@@ -12,7 +12,7 @@ else
 	app/.venv/bin/python -m pip install --no-cache-dir -r app/requirements.txt
 endif
 
-# Run Game Service
+# Run Game
 start:
 ifeq ($(OS),Windows_NT)
 	cmd.exe /C start "" powershell -NoExit -Command "$$host.UI.RawUI.WindowTitle = 'APP'; app\.venv\Scripts\python.exe app\src\agent.py"
@@ -21,7 +21,7 @@ else
 	osascript -e 'tell app "Terminal" to do script \"app/.venv/bin/python app/src/agent.py\"'
 endif
 
-# Stop Game Service
+# Stop Game
 stop:
 ifeq ($(OS),Windows_NT)
 	-@taskkill /F /IM python.exe >nul 2>&1
