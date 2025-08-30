@@ -7,9 +7,14 @@
 # Virtual environment
 app/.venv/
 
-# Models weights
+# Model weights (keep .gitkeep)
 app/src/models/*
 !app/src/models/.gitkeep
 
-# OS/editor files
+# OS / editor files
 *.DS_Store
+*.swp
+*.swo
+
+# Logs
+*.log
