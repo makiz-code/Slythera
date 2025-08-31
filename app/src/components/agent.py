@@ -10,7 +10,6 @@ BATCH_SIZE = 1000
 class Agent:
     def __init__(self, model, force_new=False):
         self.n_games = 0
-        self.gamma = 0.9
         self.epsilon_ini = 80
         self.epsilon_val = self.epsilon_ini
         self.max_games = 100
