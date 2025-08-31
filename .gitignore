@@ -1,15 +1,11 @@
 # Python cache
-**/__pycache__/
+__pycache__/
 *.pyc
 *.pyo
 *.pyd
 
 # Virtual environment
-app/.venv/
-
-# Model weights (keep .gitkeep)
-app/src/models/*
-!app/src/models/.gitkeep
+.venv/
 
 # OS / editor files
 *.DS_Store
@@ -18,3 +14,7 @@ app/src/models/*
 
 # Logs
 *.log
+
+# Model weights (keep .gitkeep)
+app/src/models/*
+!app/src/models/.gitkeep

@@ -25,6 +25,6 @@ COPY requirements.txt .
 RUN python -m pip install --upgrade pip \
     && pip install --no-cache-dir -r requirements.txt
 
-COPY src/ .
+COPY src ./src
 
-CMD ["python", "agent.py"]
+CMD ["python", "src/app.py"]

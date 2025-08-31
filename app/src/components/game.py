@@ -6,7 +6,7 @@ import shutil
 
 pygame.init()
 
-BASE_DIR = os.path.join(os.path.dirname(__file__), 'assets')
+BASE_DIR = os.path.join(os.path.dirname(__file__), '..', 'assets')
 
 LOGO_PATH = os.path.join(BASE_DIR, 'imgs', 'Slythera_logo.png')
 SNAKE_GRAPHICS_PATH = os.path.join(BASE_DIR, 'imgs', 'snake_graphics.png')
@@ -30,7 +30,7 @@ UP = (0, -1)
 
 DIRECTIONS = [RIGHT, DOWN, LEFT, UP]
 
-class SnakeGame:
+class Snake:
     def __init__(self, w=640, h=480):
         self.w = w
         self.h = h

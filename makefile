@@ -15,10 +15,10 @@ endif
 # --- Run Game ---
 start:
 ifeq ($(OS),Windows_NT)
-	cmd.exe /C start "" powershell -NoExit -Command "$$host.UI.RawUI.WindowTitle = 'GAME'; app\.venv\Scripts\python.exe app\src\agent.py"
+	cmd.exe /C start "" powershell -NoExit -Command "$$host.UI.RawUI.WindowTitle = 'GAME'; app\.venv\Scripts\python.exe app\src\app.py"
 else
-	gnome-terminal -- bash -c "app/.venv/bin/python app/src/agent.py; exec bash" || \
-	osascript -e 'tell app "Terminal" to do script \"app/.venv/bin/python app/src/agent.py\"'
+	gnome-terminal -- bash -c "app/.venv/bin/python app/src/app.py; exec bash" || \
+	osascript -e 'tell app "Terminal" to do script \"app/.venv/bin/python app/src/app.py\"'
 endif
 
 # --- Stop Game --- 
@@ -27,5 +27,5 @@ ifeq ($(OS),Windows_NT)
 	-@taskkill /F /IM python.exe >nul 2>&1
 	-@taskkill /FI "WINDOWTITLE eq GAME*"
 else
-	-pkill -f "python app/src/agent.py"
+	-pkill -f "python app/src/app.py"
 endif

@@ -2,25 +2,23 @@ import random
 import numpy as np
 from collections import deque
 
-from game import SnakeGame, DIRECTIONS, BLOCK_SIZE, LEFT, RIGHT, UP, DOWN
-from model import DQN, DQNTrainer
+from components.game import DIRECTIONS, BLOCK_SIZE, LEFT, RIGHT, UP, DOWN
 
 MAX_MEMORY = 100_000
 BATCH_SIZE = 1000
 
 class Agent:
-    def __init__(self, force_new=False):
+    def __init__(self, model, force_new=False):
         self.n_games = 0
         self.gamma = 0.9
         self.epsilon_ini = 80
         self.epsilon_val = self.epsilon_ini
         self.max_games = 100
-        self.curve = 5        # curve factor
+        self.curve = 5
 
         self.memory = deque(maxlen=MAX_MEMORY)
-        self.model = DQN(11, 256, 3)
+        self.model = model
         saved_state = None if force_new else self.model.load()
-        self.trainer = DQNTrainer(self.model, gamma=self.gamma)
 
         if saved_state:
             self.n_games = saved_state.get('n_games', 0)
@@ -75,7 +73,7 @@ class Agent:
         self.memory.append((state, action, reward, next_state, done))
 
     def train_short_memory(self, state, action, reward, next_state, done):
-        self.trainer.train_step(state, action, reward, next_state, done)
+        self.model.train(state, action, reward, next_state, done)
 
     def train_long_memory(self):
         if len(self.memory) > BATCH_SIZE:
@@ -84,62 +82,4 @@ class Agent:
             mini_sample = self.memory
 
         for state, action, reward, next_state, done in mini_sample:
-            self.trainer.train_step(state, action, reward, next_state, done)
-
-def train():
-    env = SnakeGame()
-    choice = env.main_menu()
-
-    if choice == "quit":
-        return
-    elif choice == "new":
-        agent = Agent(force_new=True)
-    else:
-        agent = Agent()
-
-    record = agent.record
-
-    try:
-        while True:
-            state_old = agent.get_state(env)
-            action = agent.get_action(state_old)
-
-            reward, done, result = env.step(action, agent.n_games, record)
-
-            if result == 'quit':
-                agent.model.save(stats={'record': record, 'n_games': agent.n_games})
-                break
-
-            if result == 'menu':
-                agent.model.save(stats={'record': record, 'n_games': agent.n_games})
-                env.reset()
-                choice = env.main_menu()
-                if choice == "quit":
-                    break
-                elif choice == "new":
-                    agent = Agent(force_new=True)
-                else:
-                    agent = Agent()
-                record = agent.record
-                env.reset()
-                continue
-
-            score = result
-            state_new = agent.get_state(env)
-            agent.train_short_memory(state_old, action, reward, state_new, done)
-            agent.remember(state_old, action, reward, state_new, done)
-
-            if done:
-                env.reset()
-                agent.n_games += 1
-                agent.train_long_memory()
-
-                if isinstance(score, int) and score > record:
-                    record = score
-                    agent.model.save(stats={'record': record, 'n_games': agent.n_games})
-
-    except KeyboardInterrupt:
-        agent.model.save(stats={'record': record, 'n_games': agent.n_games})
-
-if __name__ == '__main__':
-    train()
+            self.model.train(state, action, reward, next_state, done)

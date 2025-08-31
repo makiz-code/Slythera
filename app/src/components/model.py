@@ -7,17 +7,18 @@ from keras.layers import Dense, Input
 from keras.optimizers import Adam
 from keras.losses import MeanSquaredError
 
-MODEL_FOLDER = os.path.join(os.path.dirname(__file__), 'models')
+MODEL_FOLDER = os.path.join(os.path.dirname(__file__), '..', 'models')
 
 class DQN:
-    def __init__(self, input_size, hidden_size, output_size):
+    def __init__(self, input_size, hidden_size, output_size, gamma=0.9):
+        self.gamma = gamma
         self.model = Sequential([
             Input(shape=(input_size,)),
             Dense(hidden_size, activation='relu'),
             Dense(output_size)
         ])
         self.model.compile(
-            optimizer=Adam(learning_rate=0.001), 
+            optimizer=Adam(learning_rate=0.001),
             loss=MeanSquaredError()
         )
 
@@ -25,8 +26,16 @@ class DQN:
         state = np.array(state).reshape(1, -1)
         return self.model(state, training=False).numpy()
 
-    def train(self, x, y):
-        self.model.train_on_batch(np.array(x), np.array(y))
+    def train(self, state, action, reward, next_state, done):
+        state = np.array(state).reshape(1, -1)
+        next_state = np.array(next_state).reshape(1, -1)
+        target = self.predict(state)
+        next_q = np.max(self.predict(next_state))
+
+        Q_new = reward + self.gamma * next_q * (1 - int(done))
+        target[0][np.argmax(action)] = Q_new
+
+        self.model.train_on_batch(np.array(state), np.array(target))
 
     def save(self, file_name='model.keras', stats=None):
         if not os.path.exists(MODEL_FOLDER):
@@ -45,26 +54,10 @@ class DQN:
         if os.path.exists(file_path):
             try:
                 self.model = tf.keras.models.load_model(file_path)
-            except Exception as e:
+            except Exception:
                 return None
             state_file = os.path.join(MODEL_FOLDER, 'stats.json')
             if os.path.exists(state_file):
                 with open(state_file, 'r') as f:
                     return json.load(f)
         return None
-
-class DQNTrainer:
-    def __init__(self, model: DQN, gamma):
-        self.model = model
-        self.gamma = gamma
-
-    def train_step(self, state, action, reward, next_state, done):
-        state = np.array(state).reshape(1, -1)
-        next_state = np.array(next_state).reshape(1, -1)
-        target = self.model.predict(state)
-        next_q = np.max(self.model.predict(next_state))
-
-        Q_new = reward + self.gamma * next_q * (1 - int(done))
-        target[0][np.argmax(action)] = Q_new
-
-        self.model.train(state, target)

@@ -8,7 +8,7 @@ services:
       - DISPLAY=host.docker.internal:0
       - TF_ENABLE_ONEDNN_OPTS=0
     volumes:
-      - ./app/src:/app
-      - ./app/src/models:/app/models
+      - ./app/src:/app/src
+      - ./app/src/models:/app/src/models
     stdin_open: true
     tty: true
